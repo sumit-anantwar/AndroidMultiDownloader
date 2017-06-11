@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
     private final List<Downloadable> mDownloadables;
     private final RetryResponse mRetryResponse;
 
-    private final Map<Downloadable, Processable> processableMap;
+    private final List<Processable> processables;
     private Throwable error;
 
     RetryHandler(Context context, List<Downloadable> downloadables, RetryResponse retryResponse)
@@ -35,7 +36,7 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
         this.mDownloadables = downloadables;
         this.mRetryResponse = retryResponse;
 
-        this.processableMap = new HashMap<>(downloadables.size());
+        this.processables = new ArrayList<>(downloadables.size());
     }
 
     @Override
@@ -47,7 +48,7 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
         // if True, we should retry downloading
         if (shouldRetry) {
 
-            mRetryResponse.needsRetry(processableMap);
+            mRetryResponse.needsRetry(processables);
         }
         else if (error != null) {
             // if False and if an Exception was caught
@@ -112,7 +113,7 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
                 connection.disconnect();
 
                 // Add the processable to the ArrayList
-                processableMap.put(downloadable, processable);
+                processables.add(processable);
 
                 // Calculate the Total Pending Content Size
                 pendingContentSize += processable.getPendingContentSize();

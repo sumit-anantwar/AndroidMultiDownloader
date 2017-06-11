@@ -52,20 +52,7 @@ public class MainActivity extends AppCompatActivity
                 String destn = baseDestination + fn + extn;
 
                 Downloadable d = new Downloadable(url, destn);
-                d.setOnDownloadListener(new Downloadable.OnDownloadListener()
-                {
-                    @Override
-                    public void onDownloadComplete(Downloadable downloadable)
-                    {
-                        Log.i(LOG_TAG, "Downloaded :  Tag - " + downloadable.getTag() + " - " + downloadable.getTargetUrl() + " - to : " + downloadable.getDestinationPath());
-                    }
-
-                    @Override
-                    public void onDownloadFailure(Downloadable downloadable, int responseCode, Map<String, List<String>> headerMap)
-                    {
-                        Log.i(LOG_TAG, "Downloaded Failed : " + downloadable.getTargetUrl() + " -- Response Code - " + responseCode);
-                    }
-                });
+                d.setOnDownloadListener(downloadListener);
                 downloadables.add(d);
                 d.setTag(tag);
 
@@ -74,12 +61,29 @@ public class MainActivity extends AppCompatActivity
 
             downloadables.clear();
             Downloadable dldbl1 = new Downloadable("https://assets.popguide.me/uploads/home_location/image/3/mobile_Screenshot_from_2016-11-23_13-11-32.png", "/data/user/0/io.populi.pop_app_android/files/homeLocationImages/mobile_Screenshot_from_2016-11-23_13-11-32.png");
+            dldbl1.setOnDownloadListener(downloadListener);
             downloadables.add(dldbl1);
             Downloadable dldbl2 = new Downloadable("https://assets.popguide.me/uploads/home_location/image/2/mobile_Rome.jpeg", "/data/user/0/io.populi.pop_app_android/files/homeLocationImages/mobile_Rome.jpeg");
+            dldbl2.setOnDownloadListener(downloadListener);
             downloadables.add(dldbl2);
 
             DownloadRequest request = new DownloadRequest(context);
             request.download(downloadables, callback);
+        }
+    };
+
+    private Downloadable.OnDownloadListener downloadListener = new Downloadable.OnDownloadListener()
+    {
+        @Override
+        public void onDownloadComplete(Downloadable downloadable)
+        {
+            Log.i(LOG_TAG, "Download Success :  Tag - " + downloadable.getTag() + " - " + downloadable.getTargetUrl() + " - to : " + downloadable.getDestinationPath());
+        }
+
+        @Override
+        public void onDownloadFailure(Downloadable downloadable, int responseCode, Map<String, List<String>> headerMap)
+        {
+            Log.i(LOG_TAG, "Download Failed : " + downloadable.getTargetUrl() + " -- Response Code - " + responseCode);
         }
     };
 

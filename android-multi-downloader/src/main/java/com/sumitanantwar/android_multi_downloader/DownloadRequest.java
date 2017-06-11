@@ -71,10 +71,10 @@ public class DownloadRequest
         new RetryHandler(mContext, downloadables, new RetryResponse()
         {
             @Override
-            public void needsRetry(Map<Downloadable, Processable> processableMap)
+            public void needsRetry(List<Processable> processables)
             {
                 // Needs Retry, so create a new AsyncDownloader task
-                new AsyncDownloader(processableMap, new AsyncDownloaderCallback()
+                new AsyncDownloader(processables, new AsyncDownloaderCallback()
                 {
                     @Override
                     public void onDownloadComplete(List<Processable> processables)

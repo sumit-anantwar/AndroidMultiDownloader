@@ -1,12 +1,12 @@
 package com.sumitanantwar.android_multi_downloader;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created by Sumit Anantwar on 7/14/16.
  */
 interface RetryResponse
 {
-    void needsRetry(Map<Downloadable, Processable> processableMap);
+    void needsRetry(List<Processable> processables);
     void retryNotNeeded(Throwable e);
 }

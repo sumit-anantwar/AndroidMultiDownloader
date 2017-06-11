@@ -31,9 +31,9 @@ class AsyncDownloader extends AsyncTask<Void, Integer, Exception>
 
      * @param callback : (DownloadCallback)
      */
-    AsyncDownloader(Map<Downloadable, Processable> processableMap, AsyncDownloaderCallback callback)
+    AsyncDownloader(List<Processable> processables, AsyncDownloaderCallback callback)
     {
-        this.mProcessables = new ArrayList<>(processableMap.values());
+        this.mProcessables = processables;
         this.mCallback = callback;
     }
 

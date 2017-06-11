@@ -38,7 +38,7 @@ ext {
     libraryName = 'android-multi-downloader'
     artifact = 'android-multi-downloader'
 
-    libraryDescription = 'Standard Android View extended with XML Font property'
+    libraryDescription = 'Android Library for downloading multiple files in a single request'
 
     siteUrl = 'https://github.com/sumit-anantwar/AndroidMultiDownloader'
     gitUrl = 'https://github.com/sumit-anantwar/AndroidMultiDownloader.git'
