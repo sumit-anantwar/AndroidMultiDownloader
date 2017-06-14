@@ -8,7 +8,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
-        versionName "0.0.7"
+        versionName "0.0.9"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -43,7 +43,7 @@ ext {
     siteUrl = 'https://github.com/sumit-anantwar/AndroidMultiDownloader'
     gitUrl = 'https://github.com/sumit-anantwar/AndroidMultiDownloader.git'
 
-    libraryVersion = '0.0.7'
+    libraryVersion = '0.0.9'
 
     developerId = 'sumit-anantwar'
     developerName = 'Sumit Anantwar'

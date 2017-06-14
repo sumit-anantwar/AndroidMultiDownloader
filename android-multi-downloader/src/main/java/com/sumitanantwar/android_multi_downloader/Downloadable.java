@@ -14,7 +14,7 @@ public class Downloadable {
 
     private final URL mTargetUrl;
     private final String mDestinationPath;
-    private Integer mTag = null;
+    private Object mTag = null;
     private OnDownloadListener mDownloadListener;
     private int responseCode;
     private Map<String, List<String>> headerMap;
@@ -36,8 +36,8 @@ public class Downloadable {
 
     public String getDestinationPath() { return mDestinationPath; }
 
-    public void setTag(Integer tag) { mTag = tag; }
-    public Integer getTag() { return mTag; }
+    public void setTag(Object tag) { mTag = tag; }
+    public Object getTag() { return mTag; }
 
     private static URL urlFromString(String urlString) {
 
