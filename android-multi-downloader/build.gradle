@@ -43,7 +43,7 @@ ext {
     siteUrl = 'https://github.com/sumit-anantwar/AndroidMultiDownloader'
     gitUrl = 'https://github.com/sumit-anantwar/AndroidMultiDownloader.git'
 
-    libraryVersion = '0.0.9'
+    libraryVersion = '0.1.0'
 
     developerId = 'sumit-anantwar'
     developerName = 'Sumit Anantwar'

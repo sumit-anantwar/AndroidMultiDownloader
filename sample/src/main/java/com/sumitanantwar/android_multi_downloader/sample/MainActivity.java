@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity
                 tag++;
             }
 
-            downloadables.clear();
+//            downloadables.clear();
             Downloadable dldbl1 = new Downloadable("https://assets.popguide.me/uploads/home_location/image/3/mobile_Screenshot_from_2016-11-23_13-11-32.png", "/data/user/0/io.populi.pop_app_android/files/homeLocationImages/mobile_Screenshot_from_2016-11-23_13-11-32.png");
             dldbl1.setOnDownloadListener(downloadListener);
             downloadables.add(dldbl1);

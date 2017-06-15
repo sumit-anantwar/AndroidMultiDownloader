@@ -1,6 +1,7 @@
 package com.sumitanantwar.android_multi_downloader;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -94,6 +95,7 @@ public class DownloadRequest
                                 }
                                 else {
 
+                                    // todo: before proceeding check if the cache file exists
                                     File cacheFile = new File(processable.getCacheFilePath());
                                     File destinationFile = new File(processable.getDestinationPath());
 
@@ -174,7 +176,7 @@ public class DownloadRequest
                             }
                         }
                     }
-                }).execute();
+                }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
 
             @Override
@@ -200,7 +202,7 @@ public class DownloadRequest
                 callback.onDownloadFailure(error);
 
             }
-        }).execute();
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
     }
 
