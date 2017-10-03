@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onDownloadProgress(long completedBytes, long totalBytes) {
 
-            Log.i(LOG_TAG, String.format("Download Progress : %s / %s", completedBytes, totalBytes));
+//            Log.i(LOG_TAG, String.format("Download Progress : %s / %s", completedBytes, totalBytes));
         }
 
         @Override

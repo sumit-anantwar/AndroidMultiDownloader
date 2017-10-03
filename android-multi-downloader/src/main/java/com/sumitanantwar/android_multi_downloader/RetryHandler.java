@@ -2,6 +2,7 @@ package com.sumitanantwar.android_multi_downloader;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,8 +66,9 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
     @Override
     protected Boolean doInBackground(Void... params)
     {
-        try
-        {
+        HttpURLConnection connection = null;
+        try {
+
             long pendingContentSize = 0;
 
             for (Downloadable downloadable : mDownloadables)
@@ -79,12 +82,21 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
                 processable.setCacheFilPath(cachePath);
 
                 // Open a new connection
-                HttpURLConnection connection = (HttpURLConnection) targetUrl.openConnection();
+                connection = (HttpURLConnection) targetUrl.openConnection();
                 Map<String, List<String>> headers = connection.getHeaderFields();
                 // We only need to check the total size of the file to be downloaded.
                 // So, a HEAD request is enough.
                 // This saves bandwidth and is faster.
-                connection.setRequestMethod("HEAD");
+                try {
+                    connection.setRequestMethod("HEAD");
+                }
+                catch (ProtocolException e) {
+                    // Some API versions do not support setting Request Method
+                    // In this case, just catch the exception and proceed using the default "GET" method
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, "API Version does not support setting request method");
+                }
+
                 connection.setConnectTimeout(7000);
 
                 // Get the Response Code from the connection
@@ -111,6 +123,7 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
 
                 // Disconnect
                 connection.disconnect();
+                connection = null;
 
                 // Add the processable to the ArrayList
                 processables.add(processable);
@@ -123,21 +136,28 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
             StatFs stat = new StatFs(Environment.getDataDirectory().getPath());
             long bytesAvailable = (long)stat.getBlockSize() *(long)stat.getBlockCount();
 
-            if (bytesAvailable < pendingContentSize)
-            {
+            if (bytesAvailable < pendingContentSize) {
+
                 // Not enough memory to download the content
                 error = new OutOfMemoryError();
                 return false;
             }
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             // Catching the raised IOException
             // This happens when the URL is unreachable or the Host is not resolved.
             Log.i(LOG_TAG, "Connection Error");
             e.printStackTrace();
             error = e;
             return false;
+        }
+        finally {
+
+            if (connection != null) {
+
+                connection.disconnect();
+                connection = null;
+            }
         }
 
         // If execution reaches here, we need to retry, return True
