@@ -176,7 +176,7 @@ public class DownloadRequest
                             }
                         }
                     }
-                }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }).execute();
             }
 
             @Override
@@ -202,7 +202,7 @@ public class DownloadRequest
                 callback.onDownloadFailure(error);
 
             }
-        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }).execute();
 
     }
 
