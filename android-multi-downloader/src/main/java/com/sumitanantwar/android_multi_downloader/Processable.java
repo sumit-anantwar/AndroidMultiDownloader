@@ -1,5 +1,6 @@
 package com.sumitanantwar.android_multi_downloader;
 
+import java.io.File;
 import java.net.HttpURLConnection;
 
 /**
@@ -12,12 +13,14 @@ public class Processable extends Downloadable {
     private long downloadedContentSize;
     private long totalContentSize;
 
-    Processable(Downloadable downloadable)
+    Processable(String cacheDir, Downloadable downloadable)
     {
         super(downloadable.getTargetUrl(), downloadable.getDestinationPath());
         setOnDownloadListener(downloadable.getOnDownloadListener());
         setTag(downloadable.getTag());
         setResponseCode(downloadable.getResponseCode());
+        
+        cacheFilPath = cacheDir + File.separator + downloadable.hashCode();
     }
 
     void setDownloadedContentSize(long downloadedContentSize) {
@@ -37,10 +40,6 @@ public class Processable extends Downloadable {
 
     String getCacheFilePath() {
         return this.cacheFilPath;
-    }
-
-    void setCacheFilPath(String cacheFilPath) {
-        this.cacheFilPath = cacheFilPath;
     }
 
     long getPendingContentSize() {

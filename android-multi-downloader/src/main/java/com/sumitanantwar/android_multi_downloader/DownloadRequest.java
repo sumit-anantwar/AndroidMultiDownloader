@@ -45,9 +45,9 @@ public class DownloadRequest
 
     /**
      *
-     * @param url
-     * @param destinationPath
-     * @param callback
+     * @param url {@link String} : Remote URL
+     * @param destinationPath {@link String} : Path to the local file where thw download should be stored
+     * @param callback {@link DownloadRequestCallback}
      */
     public void downloadURLtoFile(final String url, final String destinationPath, final DownloadRequestCallback callback) {
 

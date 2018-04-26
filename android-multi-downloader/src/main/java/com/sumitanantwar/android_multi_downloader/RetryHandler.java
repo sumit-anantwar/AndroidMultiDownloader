@@ -24,20 +24,22 @@ import java.util.Map;
 class RetryHandler extends AsyncTask<Void, Void, Boolean>
 {
     private static final String LOG_TAG = RetryHandler.class.getSimpleName();
-
-    private final Context mContext;
+    
     private final List<Downloadable> mDownloadables;
     private final RetryResponse mRetryResponse;
+    
+    private final String cacheDir;
 
     private final List<Processable> processables;
     private Throwable error;
 
     RetryHandler(Context context, List<Downloadable> downloadables, RetryResponse retryResponse)
     {
-        this.mContext = context;
         this.mDownloadables = downloadables;
         this.mRetryResponse = retryResponse;
-
+        
+        this.cacheDir = context.getCacheDir().toString();
+        
         this.processables = new ArrayList<>(downloadables.size());
     }
 
@@ -73,14 +75,10 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
 
             for (Downloadable downloadable : mDownloadables)
             {
-                Processable processable = new Processable(downloadable);
+                Processable processable = new Processable(cacheDir, downloadable);
 
                 URL targetUrl = processable.getTargetUrl();
-
-                String cacheFilename = Util.generateHashFromString(targetUrl.getPath());
-                String cachePath = mContext.getCacheDir() + File.separator + cacheFilename;
-                processable.setCacheFilPath(cachePath);
-
+                
                 // Open a new connection
                 connection = (HttpURLConnection) targetUrl.openConnection();
                 Map<String, List<String>> headers = connection.getHeaderFields();
@@ -107,7 +105,7 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
                     // The connection is successful
 
                     // Open the cache file.
-                    File cacheFile = new File(cachePath);
+                    File cacheFile = new File(processable.getCacheFilePath());
                     if(!cacheFile.exists()) {
                         // Create the parent folder(s) if necessary
                         cacheFile.getParentFile().mkdirs();
