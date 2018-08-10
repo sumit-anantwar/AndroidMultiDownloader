@@ -8,9 +8,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Sumit Anantwar on 7/11/16.
@@ -31,13 +29,10 @@ class AsyncDownloader extends AsyncTask<Void, Integer, Exception>
 
      * @param callback : (DownloadCallback)
      */
-    AsyncDownloader(List<Processable> processables, AsyncDownloaderCallback callback)
-    {
-        this.mProcessables = processables;
+    AsyncDownloader(List<Processable> processables, AsyncDownloaderCallback callback) {
         this.mCallback = callback;
+        this.mProcessables = processables;
     }
-
-
 
     @Override
     protected void onPostExecute(Exception e)
@@ -45,10 +40,15 @@ class AsyncDownloader extends AsyncTask<Void, Integer, Exception>
         super.onPostExecute(e);
         if (e == null) {
             mCallback.onDownloadComplete(mProcessables);
-        }
-        else {
+        } else {
             mCallback.onDownloadFailure(e);
         }
+    }
+
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        mCallback.onDownloadCancelled();
     }
 
     @Override
@@ -56,14 +56,12 @@ class AsyncDownloader extends AsyncTask<Void, Integer, Exception>
         super.onPreExecute();
 
         for (Processable processable : mProcessables) {
-
             totalLength += processable.getPendingContentSize();
         }
     }
 
     @Override
-    protected void onProgressUpdate(Integer... values)
-    {
+    protected void onProgressUpdate(Integer... values) {
         super.onProgressUpdate(values);
         // Publish the Progress Values
         mCallback.onDownloadProgress(values[0], values[1]);
@@ -78,11 +76,13 @@ class AsyncDownloader extends AsyncTask<Void, Integer, Exception>
         {
             for (Processable processable : mProcessables)
             {
-                if (processable.getPendingContentSize() <= 0) {
-
-                    completedLength += processable.getDownloadedContentSize();
+                if (isCancelled()) {
+                    return null;
                 }
-                else {
+
+                if (processable.getPendingContentSize() <= 0) {
+                    completedLength += processable.getDownloadedContentSize();
+                } else {
 
                     if (processable.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
@@ -123,7 +123,7 @@ class AsyncDownloader extends AsyncTask<Void, Integer, Exception>
                         final byte[] data = new byte[1024];
                         int count;
                         completedLength += downloadedContentSize;
-                        while ((count = bufferedInStream.read(data, 0, 1024)) != -1) {
+                        while (!isCancelled() && (count = bufferedInStream.read(data, 0, 1024)) != -1) {
                             // Write the data directly to the OutputStream
                             fileOutStream.write(data, 0, count);
                             completedLength += count;
