@@ -1,7 +1,6 @@
 package com.sumitanantwar.android_multi_downloader;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -14,7 +13,6 @@ import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Sumit Anantwar on 7/13/16.
@@ -30,6 +28,7 @@ public class DownloadRequest
     private int retryCount = 7;
     private int timeBetweenRetries = 1000;
     private boolean isDownloading = false;
+    private RetryHandler retryHandler;
 
     public DownloadRequest(Context context) {
         this.mContext = context;
@@ -69,13 +68,13 @@ public class DownloadRequest
         SystemClock.sleep(timeBetweenRetries);
 
         // Create a new Retry Handler Async task
-        new RetryHandler(mContext, downloadables, new RetryResponse()
+        retryHandler = new RetryHandler(mContext, downloadables, new RetryResponse()
         {
             @Override
-            public void needsRetry(List<Processable> processables)
+            public AsyncDownloader needsRetry(List<Processable> processables)
             {
                 // Needs Retry, so create a new AsyncDownloader task
-                new AsyncDownloader(processables, new AsyncDownloaderCallback()
+                AsyncDownloader asyncDownloader = new AsyncDownloader(processables, new AsyncDownloaderCallback()
                 {
                     @Override
                     public void onDownloadComplete(List<Processable> processables)
@@ -176,7 +175,16 @@ public class DownloadRequest
                             }
                         }
                     }
-                }).execute();
+
+                    @Override
+                    public void onDownloadCancelled() {
+                        isDownloading = false;
+                        callback.onDownloadCancelled();
+                    }
+                });
+
+                asyncDownloader.execute();
+                return asyncDownloader;
             }
 
             @Override
@@ -202,8 +210,16 @@ public class DownloadRequest
                 callback.onDownloadFailure(error);
 
             }
-        }).execute();
 
+            @Override
+            public void onCancelled() {
+                Log.i(LOG_TAG, "Task onCancelled");
+                isDownloading = false;
+                callback.onDownloadCancelled();
+            }
+        });
+
+        retryHandler.execute();
     }
 
     // Get state
@@ -228,5 +244,11 @@ public class DownloadRequest
         }
 
         return dnldbls;
+    }
+
+    public void cancel() {
+        if (retryHandler != null) {
+            retryHandler.cancelAllTasks();
+        }
     }
 }

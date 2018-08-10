@@ -2,7 +2,6 @@ package com.sumitanantwar.android_multi_downloader;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.util.Log;
@@ -13,7 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +25,7 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
     
     private final List<Downloadable> mDownloadables;
     private final RetryResponse mRetryResponse;
+    private AsyncDownloader mAsyncDownloader;
     
     private final String cacheDir;
 
@@ -51,8 +50,7 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
         // Check the result Boolean
         // if True, we should retry downloading
         if (shouldRetry) {
-
-            mRetryResponse.needsRetry(processables);
+            mAsyncDownloader = mRetryResponse.needsRetry(processables);
         }
         else if (error != null) {
             // if False and if an Exception was caught
@@ -65,6 +63,20 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
         }
     }
 
+    public void cancelAllTasks() {
+        if (mAsyncDownloader != null && mAsyncDownloader.getStatus() == Status.RUNNING) {
+            mAsyncDownloader.cancel(true);
+        } else {
+            cancel(true);
+        }
+    }
+
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        mRetryResponse.onCancelled();
+    }
+
     @Override
     protected Boolean doInBackground(Void... params)
     {
@@ -75,6 +87,10 @@ class RetryHandler extends AsyncTask<Void, Void, Boolean>
 
             for (Downloadable downloadable : mDownloadables)
             {
+                if (isCancelled()) {
+                    return false;
+                }
+
                 Processable processable = new Processable(cacheDir, downloadable);
 
                 URL targetUrl = processable.getTargetUrl();

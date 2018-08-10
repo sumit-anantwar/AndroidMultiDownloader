@@ -11,4 +11,5 @@ public interface DownloadRequestCallback
     void onDownloadComplete(List<Downloadable> completedDownloadables, List<Downloadable> failedDownloadables);
     void onDownloadProgress(long completedBytes, long totalBytes);
     void onDownloadFailure(DownloadRequestError error);
+    void onDownloadCancelled();
 }

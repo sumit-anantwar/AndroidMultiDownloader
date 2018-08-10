@@ -7,6 +7,7 @@ import java.util.List;
  */
 interface RetryResponse
 {
-    void needsRetry(List<Processable> processables);
+    AsyncDownloader needsRetry(List<Processable> processables);
     void retryNotNeeded(Throwable e);
+    void onCancelled();
 }

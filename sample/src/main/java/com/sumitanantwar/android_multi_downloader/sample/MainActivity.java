@@ -1,8 +1,8 @@
 package com.sumitanantwar.android_multi_downloader.sample;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.URLUtil;
@@ -16,7 +16,6 @@ import com.sumitanantwar.android_multi_downloader.Downloadable;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -117,6 +116,11 @@ public class MainActivity extends AppCompatActivity
             String msg = "Download Failed with Error : " + error.name();
             Log.e(LOG_TAG, msg);
             Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onDownloadCancelled() {
+            Toast.makeText(context, "Task has been cancelled", Toast.LENGTH_LONG).show();
         }
     };
 }
